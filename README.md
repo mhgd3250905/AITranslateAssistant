@@ -1,0 +1,2 @@
+# AITranslateAssistant
+使用通义千问辅助的国际化翻译助手
