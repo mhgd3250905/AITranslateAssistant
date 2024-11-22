@@ -16,6 +16,7 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'widgets/widget_dropdown_btn.dart';
 import 'widgets/widgets_text.dart';
@@ -31,6 +32,12 @@ class _HomePageState extends State<HomePage> {
   late TextEditingController _inputController;
 
   String? _selectedOption = "英文 (English)";
+  String? _selectModel = "通义千问-2.5 72B";
+
+  final List<String> _modelOptions = [
+    '通义千问-2.5 72B',
+    '通义千问-Max',
+  ];
 
   final List<String> _options = [
     '中文 (Simplified Chinese)',
@@ -116,7 +123,6 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
 
   Widget buildLogContainer() {
     return Obx(() {
@@ -602,6 +608,54 @@ class _HomePageState extends State<HomePage> {
       return Container(
         child: Row(
           children: [
+            SizedBox(width: 20),
+            Container(
+              child: Text(
+                '大模型选择：',
+                style: TextStyle(
+                  color: Colors.blue,
+                ),
+              ),
+            ),
+            Container(
+              width: 200.0,
+              child: Win11DropdownButton(
+                value: _selectModel,
+                items: _modelOptions.map((String option) {
+                  return DropdownMenuItem<String>(
+                    value: option,
+                    child: Text(option),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectModel = newValue;
+                    _modelOptions.indexOf(_selectModel!);
+                    T18InCtrl.to.modelIndex.value =
+                        _modelOptions.indexOf(_selectModel!);
+                  });
+                },
+              ),
+            ),
+            SizedBox(width: 20),
+            Container(
+              child: Text(
+                'API KEY ',
+                style: TextStyle(
+                  color: apiKey.isEmpty ? Colors.grey : Colors.blue,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () async {
+                final Uri _url = Uri.parse(
+                    'https://help.aliyun.com/zh/dashscope/developer-reference/acquisition-and-configuration-of-api-key');
+                if (!await launchUrl(_url)) {
+                  throw 'Could not launch $_url';
+                }
+              },
+              child: Icon(Icons.info_outline, color: Colors.blue,size: 16.0,),
+            ),
             SizedBox(width: 20),
             ElevatedButton(
               onPressed: _showTextInputDialog,

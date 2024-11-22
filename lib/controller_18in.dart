@@ -24,16 +24,19 @@ class T18InCtrl extends GetxController {
 
   final apiKey = ''.obs;
 
-  final translateStepDesc=<String>[].obs;
+  final translateStepDesc = <String>[].obs;
+
+  final modelIndex = 0.obs;
 
   @override
-  void onInit()  {
+  void onInit() {
     super.onInit();
     checkApiKey();
   }
 
   void checkApiKey() async {
-    String saveApiKey = await GSIntance.getInstance().getString(GSIntance.API_KEY);
+    String saveApiKey =
+        await GSIntance.getInstance().getString(GSIntance.API_KEY);
     apiKey.value = saveApiKey;
     apiKey.refresh();
   }
@@ -49,6 +52,17 @@ class T18InCtrl extends GetxController {
     // 定义请求的URL
     String url =
         'https://dashscope.aliyuncs.com/api/v1/apps/0ba3277817044a39a9df7a392fb50477/completion';
+
+    switch (modelIndex.value) {
+      case 0:
+        url =
+            'https://dashscope.aliyuncs.com/api/v1/apps/0ba3277817044a39a9df7a392fb50477/completion';
+        break;
+      case 1:
+        url =
+            'https://dashscope.aliyuncs.com/api/v1/apps/d7ad41638d244c93a5940f882e9180f9/completion';
+        break;
+    }
 
     // 设置请求头
     Map<String, String> headers = {
@@ -95,14 +109,24 @@ class T18InCtrl extends GetxController {
   //获取记号
   Future<T18Result> translateBatch(
       List<TranslateContent> translateContents) async {
-
     // 创建一个Dio实例
     Dio dio = Dio();
-
 
     // 定义请求的URL
     String url =
         'https://dashscope.aliyuncs.com/api/v1/apps/0ba3277817044a39a9df7a392fb50477/completion';
+
+    switch (modelIndex.value) {
+      case 0:
+        url =
+        'https://dashscope.aliyuncs.com/api/v1/apps/0ba3277817044a39a9df7a392fb50477/completion';
+        break;
+      case 1:
+        url =
+        'https://dashscope.aliyuncs.com/api/v1/apps/d7ad41638d244c93a5940f882e9180f9/completion';
+        break;
+    }
+
 
     // 设置请求头
     Map<String, String> headers = {
@@ -138,5 +162,4 @@ class T18InCtrl extends GetxController {
 
     return result;
   }
-
 }
