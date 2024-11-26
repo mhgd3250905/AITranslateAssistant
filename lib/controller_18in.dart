@@ -86,24 +86,30 @@ class T18InCtrl extends GetxController {
     // 打印请求体
     print('Request Body: $data');
 
-    // 发送POST请求
-    //这里为了显示加载过程，可退
-    var response = await dio.post(
-      url,
-      options: Options(headers: headers),
-      data: data,
-    );
+    try {
+      // 发送POST请求
+      //这里为了显示加载过程，可退
+      var response = await dio.post(
+        url,
+        options: Options(headers: headers),
+        data: data,
+      );
+      T18Result result = T18Result(response.data);
+      t18Result.value = result;
+      t18Result.refresh();
 
-    T18Result result = T18Result(response.data);
-    t18Result.value = result;
-    t18Result.refresh();
+      if (result.output != null && result.output!.finish_reason == "stop") {
+        translateState.value = ConnectState.done;
+      } else {
+        translateState.value = ConnectState.err;
+      }
+      translateState.refresh();
+    } catch (e) {
+      print(e);
 
-    if (result.output != null && result.output!.finish_reason == "stop") {
-      translateState.value = ConnectState.done;
-    } else {
       translateState.value = ConnectState.err;
+      translateState.refresh();
     }
-    translateState.refresh();
   }
 
   //获取记号
@@ -119,14 +125,13 @@ class T18InCtrl extends GetxController {
     switch (modelIndex.value) {
       case 0:
         url =
-        'https://dashscope.aliyuncs.com/api/v1/apps/0ba3277817044a39a9df7a392fb50477/completion';
+            'https://dashscope.aliyuncs.com/api/v1/apps/0ba3277817044a39a9df7a392fb50477/completion';
         break;
       case 1:
         url =
-        'https://dashscope.aliyuncs.com/api/v1/apps/d7ad41638d244c93a5940f882e9180f9/completion';
+            'https://dashscope.aliyuncs.com/api/v1/apps/d7ad41638d244c93a5940f882e9180f9/completion';
         break;
     }
-
 
     // 设置请求头
     Map<String, String> headers = {

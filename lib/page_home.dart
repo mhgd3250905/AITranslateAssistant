@@ -360,13 +360,13 @@ class _HomePageState extends State<HomePage> {
       T18InCtrl.to.translateStepDesc.value.add('[$word] - 国际化翻译进行中');
       T18InCtrl.to.translateStepDesc.refresh();
 
-      T18Result result = await T18InCtrl.to.translateBatch(list);
-      // print("[$word]:${result.toString()}");
-
-      T18InCtrl.to.translateStepDesc.value.add('[$word] - 接收大模型反馈，开始解析结果');
-      T18InCtrl.to.translateStepDesc.refresh();
-
       try {
+        T18Result result = await T18InCtrl.to.translateBatch(list);
+        // print("[$word]:${result.toString()}");
+
+        T18InCtrl.to.translateStepDesc.value.add('[$word] - 接收大模型反馈，开始解析结果');
+        T18InCtrl.to.translateStepDesc.refresh();
+
         var resultStr = result.output?.text;
         if (resultStr != null) {
           if (resultStr.startsWith("```json")) {
@@ -427,11 +427,14 @@ class _HomePageState extends State<HomePage> {
     Get.back();
 
     if (T18InCtrl.to.filePathLive.value.isNotEmpty) {
-      _showTextDialog(
-          Get.context!, "完成翻译，文件保存到：$newFilePath\n本次翻译花费token：$tokens");
+      _showTextDialog(Get.context!,
+          "完成翻译，文件保存到：$newFilePath\n本次翻译花费token：$tokens ${tokens == 0 ? "\n处理异常，请检查网络！" : ""}");
 
       T18InCtrl.to.translateStepDesc.value
           .add("完成翻译，文件保存到：$newFilePath\n本次翻译花费token：$tokens");
+      if (tokens == 0) {
+        T18InCtrl.to.translateStepDesc.value.add("处理异常，请检查网络！");
+      }
       T18InCtrl.to.translateStepDesc.refresh();
       return;
     }
@@ -448,6 +451,10 @@ class _HomePageState extends State<HomePage> {
       if (state == ConnectState.none) {
         widget = Win11TextDisplay(
           text: '竭诚为你服务！',
+        );
+      } else if (state == ConnectState.err) {
+        widget = Win11TextDisplay(
+          text: '发生错误，请检查网络！',
         );
       } else if (state == ConnectState.waiting) {
         widget = Win11TextDisplay(
@@ -654,7 +661,11 @@ class _HomePageState extends State<HomePage> {
                   throw 'Could not launch $_url';
                 }
               },
-              child: Icon(Icons.info_outline, color: Colors.blue,size: 16.0,),
+              child: Icon(
+                Icons.info_outline,
+                color: Colors.blue,
+                size: 16.0,
+              ),
             ),
             SizedBox(width: 20),
             ElevatedButton(
